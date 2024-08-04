@@ -1,0 +1,16 @@
+{
+  "name": "@xinferai/help-utils",
+  "version": "1.0.0",
+  "description": "help util functions",
+  "main": "index.js",
+  "types": "types.index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sam Wen",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xinferai/help-utils.git"
+  }
+}
