@@ -11,7 +11,7 @@ module.exports = {
 };
 
 function isInBrowser() {
-    typeof window !== 'undefined' && !!window.document;
+    return typeof window !== 'undefined' && !!window.document;
 }
 
 function isPlainObject(val) {
