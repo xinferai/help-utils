@@ -1,12 +1,22 @@
 'use strict';
 
 module.exports = {
+    isInBrowser,
+    isPlainObject,
     secondsToHumanReadable,
     toSnakeCase,
     camelToSnake,
     toCamelCase,
     snakeToCamel
 };
+
+function isInBrowser() {
+    typeof window !== 'undefined' && !!window.document;
+}
+
+function isPlainObject(val) {
+    return !!val && typeof val === 'object' && val.constructor === Object;
+}
 
 function secondsToHumanReadable(seconds) {
     // Constants to help convert seconds
