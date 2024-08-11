@@ -1,6 +1,6 @@
 {
   "name": "@xinferai/help-utils",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "help util functions",
   "main": "index.js",
   "types": "types.index.d.ts",

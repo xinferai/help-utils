@@ -19,35 +19,45 @@ function isPlainObject(val) {
 }
 
 function secondsToHumanReadable(seconds) {
-    // Constants to help convert seconds
     const SECONDS_PER_MINUTE = 60;
     const MINUTES_PER_HOUR = 60;
     const HOURS_PER_DAY = 24;
-  
-    // Calculate the total number of days, hours, and minutes
+    const DAYS_PER_YEAR = 365;
+
     const days = Math.floor(seconds / (SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY));
-    if (days > 365) {
-        const years = Math.floor(days / 365);
-        if (years > 10) {
-            return "10 years and more";
-        }
-        if (years > 3) {
-            return "3 years and more";
-        }
-        return years + " year" + (years > 1 ? "s" : "");
+    
+    if (days >= DAYS_PER_YEAR * 10) {
+        return "10 years and more";
     }
+    
+    if (days >= DAYS_PER_YEAR * 3) {
+        return "3 years and more";
+    }
+    
+    if (days >= DAYS_PER_YEAR) {
+        const years = Math.floor(days / DAYS_PER_YEAR);
+        const remainingDays = days % DAYS_PER_YEAR;
+        if (remainingDays > 0) {
+            return `${years} year${years > 1 ? "s" : ""} and ${remainingDays} day${remainingDays > 1 ? "s" : ""}`;
+        }
+        return `${years} year${years > 1 ? "s" : ""}`;
+    }
+    
     if (days > 0) {
-        return days + " day" + (days > 1 ? "s" : "");
+        return `${days} day${days > 1 ? "s" : ""}`;
     }
+    
     const hours = Math.floor((seconds % (SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY)) / (SECONDS_PER_MINUTE * MINUTES_PER_HOUR));
-    if (hours > 0) { 
-        return hours + " hour" + (hours > 1 ? "s" : "");
+    if (hours > 0) {
+        return `${hours} hour${hours > 1 ? "s" : ""}`;
     }
+    
     const minutes = Math.floor((seconds % (SECONDS_PER_MINUTE * MINUTES_PER_HOUR)) / SECONDS_PER_MINUTE);
     if (minutes > 0) {
-        return minutes + " minute" + (minutes > 1 ? "s" : "");
+        return `${minutes} minute${minutes > 1 ? "s" : ""}`;
     }
-    return seconds + " second" + (seconds > 1 ? "s" : "");
+    
+    return `${seconds} second${seconds > 1 ? "s" : ""}`;
 }
 
 function toSnakeCase(str) {
