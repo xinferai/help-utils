@@ -1,14 +1,3 @@
-# help-utils
-
-help util functions
-
-## how to install
-```
-npm install @xinferai/help-utils
-```
-
-### example
-```
 'use strict';
 
 const {
@@ -17,7 +6,7 @@ const {
     camelToSnake,
     toCamelCase,
     snakeToCamel
-} = require('@xinferai/help-utils');
+} = require('./');
 
 (async () => {
     let result;
@@ -37,4 +26,3 @@ const {
     console.log({result});
     result = camelToSnake({'helloWorld': 1, 'timeAt': '2024-08-04T23:12:40.398Z'});
 })();
-```
