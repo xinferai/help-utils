@@ -11,7 +11,12 @@ module.exports = {
 };
 
 function isInBrowser() {
-    return typeof window !== 'undefined' && !!window.document;
+    if (typeof window === 'undefined') return false;
+    if (typeof window.document === 'undefined') return false;
+    if (typeof window.sessionStorage === 'undefined') return false;
+    if (typeof window.crypto === 'undefined') return false;
+    if (typeof window.crypto.subtle === 'undefined') return false;
+    return true;
 }
 
 function isPlainObject(val) {

@@ -4,7 +4,7 @@ describe('Utility Functions', () => {
     
     describe('isInBrowser', () => {
         it('should return true if window is defined', () => {
-            global.window = { document: {} };
+            global.window = { document: {}, sessionStorage: {}, crypto: { subtle: {}} };
             expect(utils.isInBrowser()).toBe(true);
         });
 
