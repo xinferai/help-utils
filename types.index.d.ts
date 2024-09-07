@@ -1,6 +1,7 @@
 
 declare module '@xinferai/help-utils' {
     export function isInBrowser(): boolean;
+    export function isPlainValue(value: any): boolean;
     export function isPlainObject(obj: any): boolean;
     export function secondsToHumanReadable(seconds: number): string;
     export function toSnakeCase(str: string): string;

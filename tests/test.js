@@ -14,6 +14,52 @@ describe('Utility Functions', () => {
         });
     });
 
+    describe('isPlainValue', () => {
+        test('returns true for string', () => {
+          expect(utils.isPlainValue('hello')).toBe(true);
+          expect(utils.isPlainValue('')).toBe(true);
+        });
+      
+        test('returns true for number', () => {
+          expect(utils.isPlainValue(42)).toBe(true);
+          expect(utils.isPlainValue(0)).toBe(true);
+          expect(utils.isPlainValue(-1)).toBe(true);
+          expect(utils.isPlainValue(3.14)).toBe(true);
+        });
+      
+        test('returns true for boolean', () => {
+          expect(utils.isPlainValue(true)).toBe(true);
+          expect(utils.isPlainValue(false)).toBe(true);
+        });
+      
+        test('returns true for undefined', () => {
+          expect(utils.isPlainValue(undefined)).toBe(true);
+        });
+      
+        test('returns true for null', () => {
+          expect(utils.isPlainValue(null)).toBe(true);
+        });
+      
+        test('returns false for object', () => {
+          expect(utils.isPlainValue({})).toBe(false);
+          expect(utils.isPlainValue({ key: 'value' })).toBe(false);
+        });
+      
+        test('returns false for array', () => {
+          expect(utils.isPlainValue([])).toBe(false);
+          expect(utils.isPlainValue([1, 2, 3])).toBe(false);
+        });
+      
+        test('returns false for function', () => {
+          expect(utils.isPlainValue(() => {})).toBe(false);
+          expect(utils.isPlainValue(function() {})).toBe(false);
+        });
+      
+        test('returns false for Symbol', () => {
+          expect(utils.isPlainValue(Symbol('test'))).toBe(false);
+        });
+    });
+
     describe('isPlainObject', () => {
         test('returns true for a plain object with valid values', () => {
           expect(utils.isPlainObject({ a: 1, b: 'string', c: true, d: undefined, e: null })).toBe(true);

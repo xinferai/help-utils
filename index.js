@@ -2,6 +2,7 @@
 
 module.exports = {
     isInBrowser,
+    isPlainValue,
     isPlainObject,
     secondsToHumanReadable,
     toSnakeCase,
@@ -16,19 +17,20 @@ function isInBrowser() {
     return true;
 }
 
+function isPlainValue(value) {
+    return (
+        typeof value === 'string' ||
+        typeof value === 'number' ||
+        typeof value === 'boolean' ||
+        value === undefined ||
+        value === null
+    );
+}
+
 function isPlainObject(input) {
   if (input === null || typeof input !== 'object') {
     return false;
   }
-  const isPlainValue = (value) => {
-    return (
-      typeof value === 'string' ||
-      typeof value === 'number' ||
-      typeof value === 'boolean' ||
-      value === undefined ||
-      value === null
-    );
-  };
   if (Array.isArray(input)) {
     return input.every(item => isPlainObject(item));
   }
