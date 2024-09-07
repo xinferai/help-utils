@@ -13,14 +13,26 @@ module.exports = {
 function isInBrowser() {
     if (typeof window === 'undefined') return false;
     if (typeof window.document === 'undefined') return false;
-    if (typeof window.sessionStorage === 'undefined') return false;
-    if (typeof window.crypto === 'undefined') return false;
-    if (typeof window.crypto.subtle === 'undefined') return false;
     return true;
 }
 
-function isPlainObject(val) {
-    return !!val && typeof val === 'object' && val.constructor === Object;
+function isPlainObject(input) {
+  if (input === null || typeof input !== 'object') {
+    return false;
+  }
+  const isPlainValue = (value) => {
+    return (
+      typeof value === 'string' ||
+      typeof value === 'number' ||
+      typeof value === 'boolean' ||
+      value === undefined ||
+      value === null
+    );
+  };
+  if (Array.isArray(input)) {
+    return input.every(item => isPlainObject(item));
+  }
+  return Object.values(input).every(isPlainValue);
 }
 
 function secondsToHumanReadable(seconds) {

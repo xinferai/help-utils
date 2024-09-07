@@ -15,21 +15,50 @@ describe('Utility Functions', () => {
     });
 
     describe('isPlainObject', () => {
-        it('should return true for plain objects', () => {
-            expect(utils.isPlainObject({})).toBe(true);
+        test('returns true for a plain object with valid values', () => {
+          expect(utils.isPlainObject({ a: 1, b: 'string', c: true, d: undefined, e: null })).toBe(true);
         });
-
-        it('should return false for arrays', () => {
-            expect(utils.isPlainObject([])).toBe(false);
+      
+        test('returns true for an empty object', () => {
+          expect(utils.isPlainObject({})).toBe(true);
         });
-
-        it('should return false for null', () => {
-            expect(utils.isPlainObject(null)).toBe(false);
+      
+        test('returns true for an array of plain objects', () => {
+          expect(utils.isPlainObject([{ a: 1 }, { b: 'string' }])).toBe(true);
         });
-
-        it('should return false for instances of classes', () => {
-            class TestClass {}
-            expect(utils.isPlainObject(new TestClass())).toBe(false);
+      
+        test('returns false for an object with nested objects', () => {
+          expect(utils.isPlainObject({ a: 1, b: { c: 2 } })).toBe(false);
+        });
+      
+        test('returns false for an array with non-object elements', () => {
+          expect(utils.isPlainObject([1, 2, 3])).toBe(false);
+        });
+      
+        test('returns false for null', () => {
+          expect(utils.isPlainObject(null)).toBe(false);
+        });
+      
+        test('returns false for undefined', () => {
+          expect(utils.isPlainObject(undefined)).toBe(false);
+        });
+      
+        test('returns false for primitive types', () => {
+          expect(utils.isPlainObject(42)).toBe(false);
+          expect(utils.isPlainObject('string')).toBe(false);
+          expect(utils.isPlainObject(true)).toBe(false);
+        });
+      
+        test('returns false for functions', () => {
+          expect(utils.isPlainObject(() => {})).toBe(false);
+        });
+      
+        test('returns true for an array of empty objects', () => {
+          expect(utils.isPlainObject([{}, {}])).toBe(true);
+        });
+      
+        test('returns false for an array with mixed valid and invalid objects', () => {
+          expect(utils.isPlainObject([{ a: 1 }, { b: { c: 2 } }])).toBe(false);
         });
     });
 
