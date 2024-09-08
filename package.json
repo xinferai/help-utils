@@ -1,6 +1,6 @@
 {
   "name": "@xinferai/help-utils",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "description": "help util functions",
   "main": "dist/index.node.js",
   "browser": "dist/index.browser.js",

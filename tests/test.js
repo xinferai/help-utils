@@ -15,97 +15,111 @@ describe('Utility Functions', () => {
     });
 
     describe('isPlainValue', () => {
-        test('returns true for string', () => {
-          expect(utils.isPlainValue('hello')).toBe(true);
-          expect(utils.isPlainValue('')).toBe(true);
-        });
-      
-        test('returns true for number', () => {
-          expect(utils.isPlainValue(42)).toBe(true);
-          expect(utils.isPlainValue(0)).toBe(true);
-          expect(utils.isPlainValue(-1)).toBe(true);
-          expect(utils.isPlainValue(3.14)).toBe(true);
-        });
-      
-        test('returns true for boolean', () => {
-          expect(utils.isPlainValue(true)).toBe(true);
-          expect(utils.isPlainValue(false)).toBe(true);
-        });
-      
-        test('returns true for undefined', () => {
-          expect(utils.isPlainValue(undefined)).toBe(true);
-        });
-      
-        test('returns true for null', () => {
-          expect(utils.isPlainValue(null)).toBe(true);
-        });
-      
-        test('returns false for object', () => {
-          expect(utils.isPlainValue({})).toBe(false);
-          expect(utils.isPlainValue({ key: 'value' })).toBe(false);
-        });
-      
-        test('returns false for array', () => {
-          expect(utils.isPlainValue([])).toBe(false);
-          expect(utils.isPlainValue([1, 2, 3])).toBe(false);
-        });
-      
-        test('returns false for function', () => {
-          expect(utils.isPlainValue(() => {})).toBe(false);
-          expect(utils.isPlainValue(function() {})).toBe(false);
-        });
-      
-        test('returns false for Symbol', () => {
-          expect(utils.isPlainValue(Symbol('test'))).toBe(false);
-        });
+      test('should return true for null', () => {
+        expect(utils.isPlainValue(null)).toBe(true);
+      });
+    
+      test('should return false for undefined', () => {
+        expect(utils.isPlainValue(undefined)).toBe(false);
+      });
+    
+      test('should return true for finite numbers', () => {
+        expect(utils.isPlainValue(42)).toBe(true);
+        expect(utils.isPlainValue(0)).toBe(true);
+        expect(utils.isPlainValue(-3.14)).toBe(true);
+      });
+    
+      test('should return false for non-finite numbers', () => {
+        expect(utils.isPlainValue(Infinity)).toBe(false);
+        expect(utils.isPlainValue(-Infinity)).toBe(false);
+        expect(utils.isPlainValue(NaN)).toBe(false);
+      });
+    
+      test('should return true for strings', () => {
+        expect(utils.isPlainValue('hello')).toBe(true);
+        expect(utils.isPlainValue('')).toBe(true);
+      });
+    
+      test('should return true for booleans', () => {
+        expect(utils.isPlainValue(true)).toBe(true);
+        expect(utils.isPlainValue(false)).toBe(true);
+      });
+    
+      test('should return true for Date objects', () => {
+        expect(utils.isPlainValue(new Date())).toBe(true);
+      });
+    
+      test('should return false for objects', () => {
+        expect(utils.isPlainValue({})).toBe(false);
+        expect(utils.isPlainValue({ a: 1 })).toBe(false);
+      });
+    
+      test('should return false for arrays', () => {
+        expect(utils.isPlainValue([])).toBe(false);
+        expect(utils.isPlainValue([1, 2, 3])).toBe(false);
+      });
+    
+      test('should return false for functions', () => {
+        expect(utils.isPlainValue(() => {})).toBe(false);
+      });
     });
-
+    
     describe('isPlainObject', () => {
-        test('returns true for a plain object with valid values', () => {
-          expect(utils.isPlainObject({ a: 1, b: 'string', c: true, d: undefined, e: null })).toBe(true);
-        });
-      
-        test('returns true for an empty object', () => {
-          expect(utils.isPlainObject({})).toBe(true);
-        });
-      
-        test('returns true for an array of plain objects', () => {
-          expect(utils.isPlainObject([{ a: 1 }, { b: 'string' }])).toBe(true);
-        });
-      
-        test('returns false for an object with nested objects', () => {
-          expect(utils.isPlainObject({ a: 1, b: { c: 2 } })).toBe(false);
-        });
-      
-        test('returns false for an array with non-object elements', () => {
-          expect(utils.isPlainObject([1, 2, 3])).toBe(false);
-        });
-      
-        test('returns false for null', () => {
-          expect(utils.isPlainObject(null)).toBe(false);
-        });
-      
-        test('returns false for undefined', () => {
-          expect(utils.isPlainObject(undefined)).toBe(false);
-        });
-      
-        test('returns false for primitive types', () => {
-          expect(utils.isPlainObject(42)).toBe(false);
-          expect(utils.isPlainObject('string')).toBe(false);
-          expect(utils.isPlainObject(true)).toBe(false);
-        });
-      
-        test('returns false for functions', () => {
-          expect(utils.isPlainObject(() => {})).toBe(false);
-        });
-      
-        test('returns true for an array of empty objects', () => {
-          expect(utils.isPlainObject([{}, {}])).toBe(true);
-        });
-      
-        test('returns false for an array with mixed valid and invalid objects', () => {
-          expect(utils.isPlainObject([{ a: 1 }, { b: { c: 2 } }])).toBe(false);
-        });
+      test('should return false for null', () => {
+        expect(utils.isPlainObject(null)).toBe(false);
+      });
+    
+      test('should return false for non-objects', () => {
+        expect(utils.isPlainObject(42)).toBe(false);
+        expect(utils.isPlainObject('string')).toBe(false);
+        expect(utils.isPlainObject(true)).toBe(false);
+        expect(utils.isPlainObject(undefined)).toBe(false);
+      });
+    
+      test('should return true for empty objects', () => {
+        expect(utils.isPlainObject({})).toBe(true);
+      });
+    
+      test('should return true for objects with plain values', () => {
+        expect(utils.isPlainObject({ a: 1, b: 'string', c: true, d: null })).toBe(true);
+      });
+    
+      test('should return true for nested plain objects', () => {
+        expect(utils.isPlainObject({ a: { b: { c: 42 } } })).toBe(true);
+      });
+    
+      test('should return true for objects with Date values', () => {
+        expect(utils.isPlainObject({ date: new Date() })).toBe(true);
+      });
+    
+      test('should return false for objects with non-plain values', () => {
+        expect(utils.isPlainObject({ a: 1, b: () => {} })).toBe(false);
+        expect(utils.isPlainObject({ a: 1, b: Symbol() })).toBe(false);
+      });
+    
+      test('should return true for empty arrays', () => {
+        expect(utils.isPlainObject([])).toBe(true);
+      });
+    
+      test('should return true for arrays with plain values', () => {
+        expect(utils.isPlainObject([1, 'string', true, null])).toBe(true);
+      });
+    
+      test('should return true for arrays with nested plain objects', () => {
+        expect(utils.isPlainObject([{ a: 1 }, { b: 2 }])).toBe(true);
+      });
+    
+      test('should return false for arrays with non-plain values', () => {
+        expect(utils.isPlainObject([1, () => {}])).toBe(false);
+      });
+    
+      test('should return true for objects with undefined values', () => {
+        expect(utils.isPlainObject({ a: 1, b: undefined })).toBe(true);
+      });
+    
+      test('should return false for arrays with undefined values', () => {
+        expect(utils.isPlainObject([1, undefined, 2])).toBe(false);
+      });
     });
 
     describe('secondsToHumanReadable', () => {

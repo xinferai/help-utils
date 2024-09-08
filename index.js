@@ -17,24 +17,51 @@ function isInBrowser() {
     return true;
 }
 
+// plain value is a value that can be serialized to JSON
+//
 function isPlainValue(value) {
-    return (
-        typeof value === 'string' ||
-        typeof value === 'number' ||
-        typeof value === 'boolean' ||
-        value === undefined ||
-        value === null
-    );
+    if (value === null) return true;
+    if (value === undefined) return false;
+
+    const type = typeof value;
+    
+    if (type === 'number') {
+        return isFinite(value);
+    }
+    
+    if (['string', 'boolean'].includes(type)) return true;
+
+    // for practical purposes, Date is considered a plain value
+    if (value instanceof Date) return true;
+
+    return false;
 }
 
+// plain object is an object that can be serialized to JSON
+//
 function isPlainObject(input) {
-  if (input === null || typeof input !== 'object') {
-    return false;
-  }
-  if (Array.isArray(input)) {
-    return input.every(item => isPlainObject(item));
-  }
-  return Object.values(input).every(isPlainValue);
+    if (input === null || typeof input !== 'object') {
+        return false; 
+    }
+
+    // For practical purposes, an array is accepted as a plain object
+    if (Array.isArray(input)) {
+        return input.every(
+            (item) => item !== undefined && (isPlainValue(item) || isPlainObject(item))
+        );
+    }
+
+    for (const key in input) {
+        if (Object.prototype.hasOwnProperty.call(input, key)) {
+            const value = input[key];
+            if (value === undefined) continue; // Skip undefined values
+            if (!isPlainValue(value) && !isPlainObject(value)) {
+                return false;
+            }
+        }
+    }
+
+    return true; 
 }
 
 function secondsToHumanReadable(seconds) {
