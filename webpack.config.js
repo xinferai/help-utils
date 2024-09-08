@@ -34,6 +34,7 @@ module.exports = [
         },
       ],
     },
+    devtool: 'source-map',
   },
   // Node.js configuration
   {
@@ -65,5 +66,6 @@ module.exports = [
         },
       ],
     },
+    devtool: 'source-map',
   },
 ];
