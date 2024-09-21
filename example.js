@@ -6,7 +6,7 @@ const {
     camelToSnake,
     toCamelCase,
     snakeToCamel
-} = require('./');
+} = require('./dist/index.js');
 
 (async () => {
     let result;

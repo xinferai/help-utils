@@ -1,25 +1,14 @@
+// src/index.ts
+
 'use strict';
 
-module.exports = {
-    isInBrowser,
-    isPlainValue,
-    isPlainObject,
-    secondsToHumanReadable,
-    toSnakeCase,
-    camelToSnake,
-    toCamelCase,
-    snakeToCamel
-};
-
-function isInBrowser() {
+export function isInBrowser(): boolean {
     if (typeof window === 'undefined') return false;
     if (typeof window.document === 'undefined') return false;
     return true;
 }
 
-// plain value is a value that can be serialized to JSON
-//
-function isPlainValue(value) {
+export function isPlainValue(value: any): boolean {
     if (value === null) return true;
     if (value === undefined) return false;
 
@@ -31,20 +20,16 @@ function isPlainValue(value) {
     
     if (['string', 'boolean'].includes(type)) return true;
 
-    // for practical purposes, Date is considered a plain value
     if (value instanceof Date) return true;
 
     return false;
 }
 
-// plain object is an object that can be serialized to JSON
-//
-function isPlainObject(input) {
+export function isPlainObject(input: any): boolean {
     if (input === null || typeof input !== 'object') {
         return false; 
     }
 
-    // For practical purposes, an array is accepted as a plain object
     if (Array.isArray(input)) {
         return input.every(
             (item) => item !== undefined && (isPlainValue(item) || isPlainObject(item))
@@ -54,7 +39,7 @@ function isPlainObject(input) {
     for (const key in input) {
         if (Object.prototype.hasOwnProperty.call(input, key)) {
             const value = input[key];
-            if (value === undefined) continue; // Skip undefined values
+            if (value === undefined) continue;
             if (!isPlainValue(value) && !isPlainObject(value)) {
                 return false;
             }
@@ -64,7 +49,8 @@ function isPlainObject(input) {
     return true; 
 }
 
-function secondsToHumanReadable(seconds) {
+
+export function secondsToHumanReadable(seconds: number): string {
     const SECONDS_PER_MINUTE = 60;
     const MINUTES_PER_HOUR = 60;
     const HOURS_PER_DAY = 24;
@@ -106,11 +92,11 @@ function secondsToHumanReadable(seconds) {
     return `${seconds} second${seconds > 1 ? "s" : ""}`;
 }
 
-function toSnakeCase(str) {
+export function toSnakeCase(str: string): string {
     return str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
 }
   
-function camelToSnake(obj) {
+export function camelToSnake(obj: any): any {
     if (typeof obj !== 'object' || obj === null) {
         return obj;
     }
@@ -134,11 +120,11 @@ function camelToSnake(obj) {
     return newObj;
 }
 
-function toCamelCase(str) {
+export function toCamelCase(str: string): string {
     return str.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
 }
 
-function snakeToCamel(obj) {
+export function snakeToCamel(obj: any): any {
     if (typeof obj !== 'object' || obj === null) {
       return obj;
     }
