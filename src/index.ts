@@ -3,8 +3,11 @@
 export {
     isPlainValue,
     isPlainObject,
+    base64Decode,
     secondsToHumanReadable,
     isInBrowser,
+    toCamelCase,
+    toSnakeCase,
     camelToSnake,
     snakeToCamel
 };
@@ -12,8 +15,11 @@ export {
 export default {
     isPlainValue,
     isPlainObject,
+    base64Decode,
     secondsToHumanReadable,
     isInBrowser,
+    toCamelCase,
+    toSnakeCase,
     camelToSnake,
     snakeToCamel
 };
@@ -65,6 +71,23 @@ function isPlainObject(input: any): boolean {
     return true; 
 }
 
+// Universal base64 decoding
+function base64Decode(str: string): string {
+    if (typeof Buffer !== 'undefined') {
+        // Node.js environment
+        return Buffer.from(str, 'base64').toString('utf8');
+    } else if (typeof atob === 'function') {
+        // Browser environment with atob
+        return decodeURIComponent(
+            atob(str).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join('')
+        );
+    } else {
+        // Fallback for environments without Buffer or atob
+        throw new Error('Base64 decoding is not supported in this environment');
+    }
+};
 
 function secondsToHumanReadable(seconds: number): string {
     const SECONDS_PER_MINUTE = 60;
