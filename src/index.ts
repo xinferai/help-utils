@@ -1,14 +1,30 @@
 // src/index.ts
 
-'use strict';
+export {
+    isPlainValue,
+    isPlainObject,
+    secondsToHumanReadable,
+    isInBrowser,
+    camelToSnake,
+    snakeToCamel
+};
 
-export function isInBrowser(): boolean {
+export default {
+    isPlainValue,
+    isPlainObject,
+    secondsToHumanReadable,
+    isInBrowser,
+    camelToSnake,
+    snakeToCamel
+};
+
+function isInBrowser(): boolean {
     if (typeof window === 'undefined') return false;
     if (typeof window.document === 'undefined') return false;
     return true;
 }
 
-export function isPlainValue(value: any): boolean {
+function isPlainValue(value: any): boolean {
     if (value === null) return true;
     if (value === undefined) return false;
 
@@ -25,7 +41,7 @@ export function isPlainValue(value: any): boolean {
     return false;
 }
 
-export function isPlainObject(input: any): boolean {
+function isPlainObject(input: any): boolean {
     if (input === null || typeof input !== 'object') {
         return false; 
     }
@@ -50,7 +66,7 @@ export function isPlainObject(input: any): boolean {
 }
 
 
-export function secondsToHumanReadable(seconds: number): string {
+function secondsToHumanReadable(seconds: number): string {
     const SECONDS_PER_MINUTE = 60;
     const MINUTES_PER_HOUR = 60;
     const HOURS_PER_DAY = 24;
@@ -92,11 +108,11 @@ export function secondsToHumanReadable(seconds: number): string {
     return `${seconds} second${seconds > 1 ? "s" : ""}`;
 }
 
-export function toSnakeCase(str: string): string {
+function toSnakeCase(str: string): string {
     return str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
 }
   
-export function camelToSnake(obj: any): any {
+function camelToSnake(obj: any): any {
     if (typeof obj !== 'object' || obj === null) {
         return obj;
     }
@@ -120,11 +136,11 @@ export function camelToSnake(obj: any): any {
     return newObj;
 }
 
-export function toCamelCase(str: string): string {
+function toCamelCase(str: string): string {
     return str.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
 }
 
-export function snakeToCamel(obj: any): any {
+function snakeToCamel(obj: any): any {
     if (typeof obj !== 'object' || obj === null) {
       return obj;
     }
