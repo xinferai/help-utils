@@ -9,7 +9,8 @@ export {
     toCamelCase,
     toSnakeCase,
     camelToSnake,
-    snakeToCamel
+    snakeToCamel,
+    endsWithAtToDate
 };
 
 export default {
@@ -21,7 +22,8 @@ export default {
     toCamelCase,
     toSnakeCase,
     camelToSnake,
-    snakeToCamel
+    snakeToCamel,
+    endsWithAtToDate
 };
 
 function isInBrowser(): boolean {
@@ -129,6 +131,28 @@ function secondsToHumanReadable(seconds: number): string {
     }
     
     return `${seconds} second${seconds > 1 ? "s" : ""}`;
+}
+
+function endsWithAtToDate(obj: any): any {
+    if (typeof obj !== 'object' || obj === null) {
+        return obj;
+    }
+    if (Array.isArray(obj)) {
+        return obj.map(endsWithAtToDate);
+    }
+    const entries = Object.entries(obj);
+    if (entries.length === 0) {
+        return obj;
+    }
+    const newObj = {};
+    for (let [key, value] of entries) {
+        if (typeof value === 'string' && (key.endsWith('_at') || key.endsWith('At'))) {
+            if (!value) value = null;
+            else value = new Date(value);
+        }
+        newObj[key] = value;
+    };
+    return newObj;
 }
 
 function toSnakeCase(str: string): string {
