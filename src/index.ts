@@ -206,11 +206,11 @@ function convertObject<T extends object>(
 }
 
 function snakeToCamel<T extends object>(obj: T): any {
-    return convertObject(obj, 'camel');
+    return convertObject(obj, 'camel', true);
 }
 
 function camelToSnake<T extends object>(obj: T): any {
-    return convertObject(obj, 'snake');
+    return convertObject(obj, 'snake', true);
 }
 
 function endsWithAtToDate<T extends object>(obj: T): any {
