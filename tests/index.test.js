@@ -191,15 +191,19 @@ describe('Utility Functions', () => {
 
   describe('camelToSnake', () => {
     it('should convert object keys from camelCase to snake_case', () => {
-      const obj = { camelCaseKey: 'value' };
-      expect(camelToSnake(obj)).toEqual({ camel_case_key: 'value' });
+      const obj = { camelCaseKey: 'value', updatedAt: '2023-08-11T00:00:00Z' };
+      const result = camelToSnake(obj);
+      expect(result.camel_case_key).toBe('value');
+      expect(result.updated_at).toBeInstanceOf(Date);
     });
   });
 
   describe('snakeToCamel', () => {
     it('should convert object keys from snake_case to camelCase', () => {
-      const obj = { snake_case_key: 'value' };
-      expect(snakeToCamel(obj)).toEqual({ snakeCaseKey: 'value' });
+      const obj = { snake_case_key: 'value', created_at: '2023-08-10T00:00:00Z' };
+      const result = snakeToCamel(obj);
+      expect(result.snakeCaseKey).toBe('value');
+      expect(result.createdAt).toBeInstanceOf(Date);
     });
   });
 
