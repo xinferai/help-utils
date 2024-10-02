@@ -165,7 +165,7 @@ function toSnakeCase(str: string): string {
 }
   
 function camelToSnake(obj: any): any {
-    if (typeof obj !== 'object' || obj === null) {
+    if (typeof obj !== 'object' || obj === null || obj === undefined) {
         return obj;
     }
     if (Array.isArray(obj)) {
@@ -198,7 +198,7 @@ function toCamelCase(str: string): string {
 }
 
 function snakeToCamel(obj: any): any {
-    if (typeof obj !== 'object' || obj === null) {
+    if (typeof obj !== 'object' || obj === null || obj === undefined) {
       return obj;
     }
     if (Array.isArray(obj)) {
