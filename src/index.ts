@@ -168,7 +168,7 @@ function convertCase(str: string, to: CaseStyle): string {
 }
 
 function parseDate(value: string): Date | null {
-    if (!value) return null;
+    if (typeof value !== 'string' || !value) return null;
     const date = parseISO(value);
     return isValid(date) ? date : null;
 }
@@ -186,9 +186,15 @@ function convertObject<T extends object>(
         return obj.map(item => convertObject(item, toCaseStyle, convertDates));
     }
 
+    const entries = Object.entries(obj);
+
+    if (entries.length === 0) {
+        return obj;
+    }
+
     const result: Record<string, any> = {};
 
-    for (const [key, value] of Object.entries(obj)) {
+    for (const [key, value] of entries) {
         let newKey = convertCase(key, toCaseStyle);
         let newValue = value;
 
@@ -196,7 +202,11 @@ function convertObject<T extends object>(
             newValue = convertObject(value, toCaseStyle, convertDates);
         } else if (convertDates && typeof value === 'string' && 
                    (key.endsWith('_at') || key.endsWith('At'))) {
-            newValue = parseDate(value);
+            const date = parseDate(value);
+            if (date) {
+                newValue = date;
+            }
+                
         }
 
         result[newKey] = newValue;
