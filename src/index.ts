@@ -32,45 +32,52 @@ function isInBrowser(): boolean {
     return true;
 }
 
-function isPlainValue(value: any): boolean {
-    if (value === null) return true;
-    if (value === undefined) return false;
+type PlainValue = null | undefined | number | string | boolean | Date;
+type PlainObject = { [key: string]: PlainValue | PlainObject } | (PlainValue | PlainObject)[];
+
+function isPlainValue(value: unknown): value is PlainValue {
+    if (value === null || value === undefined) return true;
 
     const type = typeof value;
     
     if (type === 'number') {
-        return isFinite(value);
+        return Number.isFinite(value);
     }
     
-    if (['string', 'boolean'].includes(type)) return true;
+    if (type === 'string' || type === 'boolean') return true;
 
-    if (value instanceof Date) return true;
+    if (value instanceof Date && !isNaN(value.getTime())) return true;
 
     return false;
 }
 
-function isPlainObject(input: any): boolean {
+function isPlainObject(input: unknown, seen = new WeakSet()): input is PlainObject {
     if (input === null || typeof input !== 'object') {
-        return false; 
+        return false;
     }
+
+    if (seen.has(input)) {
+        return false; // Circular reference detected
+    }
+
+    seen.add(input);
 
     if (Array.isArray(input)) {
         return input.every(
-            (item) => item !== undefined && (isPlainValue(item) || isPlainObject(item))
+            (item) => isPlainValue(item) || isPlainObject(item, seen)
         );
     }
 
     for (const key in input) {
         if (Object.prototype.hasOwnProperty.call(input, key)) {
             const value = input[key];
-            if (value === undefined) continue;
-            if (!isPlainValue(value) && !isPlainObject(value)) {
+            if (!isPlainValue(value) && !isPlainObject(value, seen)) {
                 return false;
             }
         }
     }
 
-    return true; 
+    return true;
 }
 
 // Universal base64 decoding

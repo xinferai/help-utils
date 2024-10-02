@@ -1,6 +1,6 @@
 {
   "name": "@xinferai/help-utils",
-  "version": "1.3.6",
+  "version": "1.3.7",
   "description": "help util functions for both Node.js and browser",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
