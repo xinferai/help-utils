@@ -8,5 +8,6 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   outDir: 'dist',
+  noExternal: ['@date-fns'], 
   target: ['node16', 'es2018'],
 })

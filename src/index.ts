@@ -1,13 +1,16 @@
 // src/index.ts
 
+import { parseISO, isValid } from 'date-fns';
+
 export {
     isPlainValue,
     isPlainObject,
     base64Decode,
     secondsToHumanReadable,
     isInBrowser,
-    toCamelCase,
-    toSnakeCase,
+    convertCase,
+    parseDate,
+    convertObject, 
     camelToSnake,
     snakeToCamel,
     endsWithAtToDate
@@ -19,8 +22,9 @@ export default {
     base64Decode,
     secondsToHumanReadable,
     isInBrowser,
-    toCamelCase,
-    toSnakeCase,
+    convertCase,
+    parseDate,
+    convertObject,
     camelToSnake,
     snakeToCamel,
     endsWithAtToDate
@@ -68,9 +72,9 @@ function isPlainObject(input: unknown, seen = new WeakSet()): input is PlainObje
         );
     }
 
-    for (const key in input) {
+    for (const key in input as Record<string, unknown>) {
         if (Object.prototype.hasOwnProperty.call(input, key)) {
-            const value = input[key];
+            const value = (input as Record<string, unknown>)[key];
             if (!isPlainValue(value) && !isPlainObject(value, seen)) {
                 return false;
             }
@@ -98,137 +102,117 @@ function base64Decode(str: string): string {
     }
 };
 
+const SECONDS_PER_MINUTE = 60;
+const MINUTES_PER_HOUR = 60;
+const HOURS_PER_DAY = 24;
+const DAYS_PER_YEAR = 365;
+
+const TIME_UNITS = [
+  { unit: 'year', seconds: SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY * DAYS_PER_YEAR },
+  { unit: 'day', seconds: SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY },
+  { unit: 'hour', seconds: SECONDS_PER_MINUTE * MINUTES_PER_HOUR },
+  { unit: 'minute', seconds: SECONDS_PER_MINUTE },
+  { unit: 'second', seconds: 1 },
+];
+
+function pluralize(count: number, unit: string): string {
+  return `${count} ${unit}${count !== 1 ? 's' : ''}`;
+}
+
 function secondsToHumanReadable(seconds: number): string {
-    const SECONDS_PER_MINUTE = 60;
-    const MINUTES_PER_HOUR = 60;
-    const HOURS_PER_DAY = 24;
-    const DAYS_PER_YEAR = 365;
+  if (seconds < 0) {
+    throw new Error('Input must be a non-negative number');
+  }
 
-    const days = Math.floor(seconds / (SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY));
-    
-    if (days >= DAYS_PER_YEAR * 10) {
-        return "10 years and more";
-    }
-    
-    if (days >= DAYS_PER_YEAR * 3) {
-        return "3 years and more";
-    }
-    
-    if (days >= DAYS_PER_YEAR) {
-        const years = Math.floor(days / DAYS_PER_YEAR);
-        const remainingDays = days % DAYS_PER_YEAR;
-        if (remainingDays > 0) {
-            return `${years} year${years > 1 ? "s" : ""} and ${remainingDays} day${remainingDays > 1 ? "s" : ""}`;
+  if (seconds >= 10 * TIME_UNITS[0].seconds) {
+    return '10 years and more';
+  }
+
+  if (seconds >= 3 * TIME_UNITS[0].seconds) {
+    return '3 years and more';
+  }
+
+  const result: string[] = [];
+  let remainingSeconds = seconds;
+
+  for (const { unit, seconds: unitSeconds } of TIME_UNITS) {
+    if (remainingSeconds >= unitSeconds) {
+      const count = Math.floor(remainingSeconds / unitSeconds);
+      result.push(pluralize(count, unit));
+      remainingSeconds %= unitSeconds;
+
+      if (unit === 'year' && remainingSeconds > 0) {
+        const days = Math.floor(remainingSeconds / TIME_UNITS[1].seconds);
+        if (days > 0) {
+          result.push(pluralize(days, 'day'));
         }
-        return `${years} year${years > 1 ? "s" : ""}`;
+        break;
+      }
+
+      if (result.length === 1) break;
     }
-    
-    if (days > 0) {
-        return `${days} day${days > 1 ? "s" : ""}`;
-    }
-    
-    const hours = Math.floor((seconds % (SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY)) / (SECONDS_PER_MINUTE * MINUTES_PER_HOUR));
-    if (hours > 0) {
-        return `${hours} hour${hours > 1 ? "s" : ""}`;
-    }
-    
-    const minutes = Math.floor((seconds % (SECONDS_PER_MINUTE * MINUTES_PER_HOUR)) / SECONDS_PER_MINUTE);
-    if (minutes > 0) {
-        return `${minutes} minute${minutes > 1 ? "s" : ""}`;
-    }
-    
-    return `${seconds} second${seconds > 1 ? "s" : ""}`;
+  }
+
+  return result.join(' and ') || '0 seconds';
 }
 
-function endsWithAtToDate(obj: any): any {
+type CaseStyle = 'snake' | 'camel' | 'none';
+
+function convertCase(str: string, to: CaseStyle): string {
+    if (to === 'snake') {
+        return str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+    } else if (to === 'camel') {
+        return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+    }
+    return str; // 'none' case, return as is
+}
+
+function parseDate(value: string): Date | null {
+    if (!value) return null;
+    const date = parseISO(value);
+    return isValid(date) ? date : null;
+}
+
+function convertObject<T extends object>(
+    obj: T,
+    toCaseStyle: CaseStyle,
+    convertDates: boolean = false
+): any {
     if (typeof obj !== 'object' || obj === null || obj === undefined) {
         return obj;
     }
+
     if (Array.isArray(obj)) {
-        return obj.map(endsWithAtToDate);
+        return obj.map(item => convertObject(item, toCaseStyle, convertDates));
     }
-    const entries = Object.entries(obj);
-    if (entries.length === 0) {
-        return obj;
-    }
-    const newObj = {};
-    for (let [key, value] of entries) {
-        if (typeof value === 'string' && (key.endsWith('_at') || key.endsWith('At'))) {
-            if (!value) value = null;
-            else {
-                const date = new Date(value);
-                if (date.toString() !== 'Invalid Date') {
-                    value = date;
-                }
-            }
+
+    const result: Record<string, any> = {};
+
+    for (const [key, value] of Object.entries(obj)) {
+        let newKey = convertCase(key, toCaseStyle);
+        let newValue = value;
+
+        if (typeof value === 'object' && value !== null) {
+            newValue = convertObject(value, toCaseStyle, convertDates);
+        } else if (convertDates && typeof value === 'string' && 
+                   (key.endsWith('_at') || key.endsWith('At'))) {
+            newValue = parseDate(value);
         }
-        newObj[key] = value;
-    };
-    return newObj;
+
+        result[newKey] = newValue;
+    }
+
+    return result;
 }
 
-function toSnakeCase(str: string): string {
-    return str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
-}
-  
-function camelToSnake(obj: any): any {
-    if (typeof obj !== 'object' || obj === null || obj === undefined) {
-        return obj;
-    }
-    if (Array.isArray(obj)) {
-        return obj.map(camelToSnake);
-    }
-    const entries = Object.entries(obj);
-    if (entries.length === 0) {
-        return obj;
-    }
-    const newObj = {};
-    for (let [key, value] of entries) {
-        key = toSnakeCase(key);
-        value = camelToSnake(value);
-        if (key.endsWith('_at') && typeof value === 'string') {
-            if (!value) value = null;
-            else {
-                const date = new Date(value);
-                if (date.toString() !== 'Invalid Date') {
-                    value = date;
-                }
-            }
-        }
-        newObj[key] = value;
-    };
-    return newObj;
+function snakeToCamel<T extends object>(obj: T): any {
+    return convertObject(obj, 'camel');
 }
 
-function toCamelCase(str: string): string {
-    return str.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+function camelToSnake<T extends object>(obj: T): any {
+    return convertObject(obj, 'snake');
 }
 
-function snakeToCamel(obj: any): any {
-    if (typeof obj !== 'object' || obj === null || obj === undefined) {
-      return obj;
-    }
-    if (Array.isArray(obj)) {
-        return obj.map(snakeToCamel);
-    }
-    const entries = Object.entries(obj);
-    if (entries.length === 0) {
-        return obj;
-    }
-    const newObj = {}; 
-    for (let [key, value] of entries) {
-        key = toCamelCase(key);
-        value = snakeToCamel(value);
-        if (key.endsWith('At') && typeof value === 'string') {
-            if (!value) value = null;
-            else {
-                const date = new Date(value);
-                if (date.toString() !== 'Invalid Date') {
-                    value = date;
-                }
-            }
-        }
-        newObj[key] = value;
-    };
-    return newObj;
+function endsWithAtToDate<T extends object>(obj: T): any {
+    return convertObject(obj, 'none', true);
 }
