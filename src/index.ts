@@ -134,7 +134,7 @@ function secondsToHumanReadable(seconds: number): string {
 }
 
 function endsWithAtToDate(obj: any): any {
-    if (typeof obj !== 'object' || obj === null) {
+    if (typeof obj !== 'object' || obj === null || obj === undefined) {
         return obj;
     }
     if (Array.isArray(obj)) {
@@ -148,7 +148,12 @@ function endsWithAtToDate(obj: any): any {
     for (let [key, value] of entries) {
         if (typeof value === 'string' && (key.endsWith('_at') || key.endsWith('At'))) {
             if (!value) value = null;
-            else value = new Date(value);
+            else {
+                const date = new Date(value);
+                if (date.toString() !== 'Invalid Date') {
+                    value = date;
+                }
+            }
         }
         newObj[key] = value;
     };
@@ -176,7 +181,12 @@ function camelToSnake(obj: any): any {
         value = camelToSnake(value);
         if (key.endsWith('_at') && typeof value === 'string') {
             if (!value) value = null;
-            else value = new Date(value);
+            else {
+                const date = new Date(value);
+                if (date.toString() !== 'Invalid Date') {
+                    value = date;
+                }
+            }
         }
         newObj[key] = value;
     };
@@ -204,7 +214,12 @@ function snakeToCamel(obj: any): any {
         value = snakeToCamel(value);
         if (key.endsWith('At') && typeof value === 'string') {
             if (!value) value = null;
-            else value = new Date(value);
+            else {
+                const date = new Date(value);
+                if (date.toString() !== 'Invalid Date') {
+                    value = date;
+                }
+            }
         }
         newObj[key] = value;
     };
